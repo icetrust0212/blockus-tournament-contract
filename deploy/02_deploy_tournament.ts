@@ -14,7 +14,7 @@ const fn: DeployFunction = async function ({
   const contractDeployed = await deploy("Tournament", {
     from: deployer.address,
     log: true,
-    skipIfAlreadyDeployed: true,
+    skipIfAlreadyDeployed: false,
     args: [
         currency.address,
         ticket.address,
