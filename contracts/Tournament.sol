@@ -19,7 +19,7 @@ contract Tournament is ERC1155Holder, Ownable {
     uint256 public tournamentId = 0;
 
     mapping(uint256 => mapping(address => bool)) public players;
-    mapping(uint256 => uint256) numPlayers;
+    mapping(uint256 => uint256) public numPlayers;
 
     event TournamentEnded(uint256 indexed tournamentId, address first, address second, address third);
     event CurrencySet(address indexed currency);
@@ -41,6 +41,8 @@ contract Tournament is ERC1155Holder, Ownable {
 
     function enterTournament() external {
         address _playerAddress = msg.sender;
+
+        require(!players[tournamentId][_playerAddress], 'You are already registered');
 
         require(
             ERC1155(ticketNFT).balanceOf(_playerAddress, ticketNFTId) > 0,
@@ -70,10 +72,6 @@ contract Tournament is ERC1155Holder, Ownable {
         address second,
         address third
     ) external onlyOwner {
-        require(
-            numPlayers[tournamentId] > 2,
-            "Not enough players in the tournament"
-        );
         require(players[tournamentId][first], "Invalid winner");
         require(players[tournamentId][second], "Invalid winner");
         require(players[tournamentId][third], "Invalid winner");
@@ -93,8 +91,8 @@ contract Tournament is ERC1155Holder, Ownable {
         tournamentId ++;
     }
 
-    function isUserRegistered(uint256 tournamentId, address user) public view returns(bool) {
-        return players[tournamentId][user];
+    function isUserRegistered(uint256 _tournamentId, address user) public view returns(bool) {
+        return players[_tournamentId][user];
     }
 
     function setCurrencyAddress(address _newCurrency) external onlyOwner {
